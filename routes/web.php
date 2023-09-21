@@ -9,6 +9,7 @@ use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\PenjualanDetailController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\LaporanController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -65,4 +66,13 @@ Route::group(['middleware' => 'auth'], function(){
     Route::get('/setting', [SettingController::class, 'index'])->name('setting.index');
     Route::get('/setting/first', [SettingController::class, 'show'])->name('setting.show');
     Route::post('/setting', [SettingController::class, 'update'])->name('setting.update');
+
+    Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+    Route::get('/laporan/data/{awal}/{akhir}', [LaporanController::class, 'data'])->name('laporan.data');
+    Route::get('/laporan/pdf/{awal}/{akhir}', [LaporanController::class, 'exportPDF'])->name('laporan.export_pdf');
+
+
+    Route::get('/user/data', [UserController::class, 'data'])->name('user.data');
+    Route::resource('/user', UserController::class);
+
 });
