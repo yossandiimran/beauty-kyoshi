@@ -10,6 +10,9 @@ use App\Http\Controllers\PenjualanDetailController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\TerapisController;
+
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -45,6 +48,9 @@ Route::group(['middleware' => 'auth'], function(){
     Route::get('/member/data', [MemberController::class, 'data'])->name('member.data');
     Route::post('/member/cetak-member', [MemberController::class, 'cetakMember'])->name('member.cetak_member');
     Route::resource('/member', MemberController::class);
+
+    Route::get('/terapis/data', [TerapisController::class, 'data'])->name('terapis.data');
+    Route::resource('/terapis', TerapisController::class);
 
     Route::get('/supplier/data', [SupplierController::class, 'data'])->name('supplier.data');
     Route::resource('/supplier', SupplierController::class);

@@ -20,6 +20,11 @@ class PenjualanDetail extends Model
 
     public function member()
     {
-        return $this->hasOne(member::class, 'id_member', 'id_member');
+        return $this->hasOne(Member::class, 'id_member', 'id_member');
+    }
+
+    public function terapis()
+    {
+        return $this->hasOne(Terapis::class, 'id_terapis', 'id_terapis');
     }
 }
