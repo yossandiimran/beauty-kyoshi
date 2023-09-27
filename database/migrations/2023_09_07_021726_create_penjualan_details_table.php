@@ -17,6 +17,7 @@ return new class extends Migration
             $table->increments('id_penjualan_detail');
             $table->integer('id_penjualan');
             $table->integer('id_produk');
+            $table->integer('id_terapis');
             $table->integer('harga_jual');
             $table->integer('jumlah');
             $table->tinyInteger('diskon')->default(0);

@@ -45,7 +45,7 @@
                 <form class="form-produk">
                     @csrf
                     <div class="form-group row">
-                        <label for="kode_produk" class="col-lg-2">Kode Produk</label>
+                        <label for="kode_produk" class="col-lg-2">Kode Produks</label>
                         <div class="col-lg-5">
                             <div class="input-group">
                                 <input type="hidden" name="id_penjualan" id="id_penjualan" value="{{ $id_penjualan }}">
@@ -87,7 +87,7 @@
                             <input type="hidden" name="id_member" id="id_member" value="{{ $memberSelected->id_member }}">
 
                             <div class="form-group row">
-                                <label for="totalrp" class="col-lg-2 control-label">Total</label>
+                                <label for="totalrp" class="col-lg-2 control-label">Totals</label>
                                 <div class="col-lg-8">
                                     <input type="text" id="totalrp" class="form-control" readonly>
                                 </div>
@@ -272,7 +272,10 @@
     function pilihMember(id, kode) {
         $('#id_member').val(id);
         $('#kode_member').val(kode);
-        $('#diskon').val('{{ $diskon }}');
+
+        // $('#diskon').val('{{ $diskon }}');
+        $('#diskon').val( {{ $diskon->diskon}} );
+
         loadForm($('#diskon').val());
         $('#diterima').val(0).focus().select();
         hideMember();
