@@ -8,6 +8,7 @@ use App\Models\Penjualan;
 use App\Models\Produk;
 use App\Models\Member;
 use App\Models\Setting;
+use App\Models\Terapis;
 
 class PenjualanDetailController extends Controller
 {
@@ -20,6 +21,7 @@ class PenjualanDetailController extends Controller
     {
         $produk = Produk::orderBy('nama_produk')->get();
         $member = Member::orderBy('nama')->get();
+        $terapis = Terapis::orderBy('nama')->get();
         $diskon = Setting::first();
 
         // dd($produk, $member, $diskon);
@@ -29,7 +31,7 @@ class PenjualanDetailController extends Controller
             $penjualan = Penjualan::find($id_penjualan);
             $memberSelected = $penjualan->member ?? new Member();
 
-            return view('penjualan_detail.index', compact('produk', 'member', 'diskon', 'id_penjualan', 'penjualan', 'memberSelected'));
+            return view('penjualan_detail.index', compact('produk', 'member', 'diskon', 'id_penjualan', 'penjualan', 'memberSelected', 'terapis'));
         } else {
             if (auth()->user()->level == 1) {
                 return redirect()->route('transaksi.baru');
@@ -42,6 +44,7 @@ class PenjualanDetailController extends Controller
     public function data($id)
     {
         $detail = PenjualanDetail::with('produk')
+        ->with('terapis')
             ->where('id_penjualan', $id)
             ->get();
 
@@ -58,9 +61,21 @@ class PenjualanDetailController extends Controller
             $row['jumlah']      = '<input type="number" class="form-control input-sm quantity" data-id="'. $item->id_penjualan_detail .'" value="'. $item->jumlah .'">';
             $row['diskon']      = $item->diskon . '%';
             $row['subtotal']    = 'Rp. '. format_uang($item->subtotal);
-            $row['aksi']        = '<div class="btn-group">
+            $row['aksi']        = '<div class="col-lg-12 ">
                                     <button onclick="deleteData(`'. route('transaksi.destroy', $item->id_penjualan_detail) .'`)" class="btn btn-xs btn-danger btn-flat"><i class="fa fa-trash"></i></button>
                                 </div>';
+
+                                $trp = ($item->terapis != null) ? $item->terapis->kode_terapis : "" ;
+            $row['terapis']     = '
+            <div class="col-lg-12">
+                <div class="input-group">
+                    <input type="hidden" name="id_terapis" id="id_terapis">
+                    <input type="text" class="form-control" value ="'.$trp .'" name="kode_terapis" id="kode_terapis" required>
+                    <span class="input-group-btn">
+                        <button onclick="tampilTerapis('.$item->id_penjualan_detail.')" class="btn btn-info btn-flat" type="button"><i class="fa fa-arrow-right"></i></button>
+                    </span>
+                </div>
+            </div>';
             $data[] = $row;
 
             $total += $item->harga_jual * $item->jumlah - (($item->diskon * $item->jumlah) / 100 * $item->harga_jual);;
@@ -75,13 +90,14 @@ class PenjualanDetailController extends Controller
             'jumlah'      => '',
             'diskon'      => '',
             'subtotal'    => '',
+            'terapis'    => '',
             'aksi'        => '',
         ];
 
         return datatables()
             ->of($data)
             ->addIndexColumn()
-            ->rawColumns(['aksi', 'kode_produk', 'jumlah'])
+            ->rawColumns(['aksi', 'kode_produk', 'jumlah', 'terapis'])
             ->make(true);
     }
 
@@ -115,11 +131,22 @@ class PenjualanDetailController extends Controller
         $detail->jumlah = 1;
         $detail->diskon = 0;
         $detail->subtotal = $produk->harga_jual;
+        $detail->id_terapis = $request->id_terapis;
         $detail->save();
         // - ($produk->diskon / 100 * $produk->harga_jual)
 
         return response()->json('Data berhasil disimpan', 200);
     }
+
+    public function updateTerapis(Request $request)
+    {
+        $detail = PenjualanDetail::find($request->id_penjualan_detail);
+        $detail->id_terapis = $request->id_terapis;
+        $detail->update();
+
+        // - (($detail->diskon * $request->jumlah) / 100 * $detail->harga_jual)
+    }
+
 
 
     /**

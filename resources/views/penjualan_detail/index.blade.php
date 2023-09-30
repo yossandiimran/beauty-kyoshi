@@ -68,7 +68,8 @@
                         <th width="15%">Jumlah</th>
                         <th>Diskon</th>
                         <th>Subtotal</th>
-                        <th width="15%"><i class="fa fa-cog"></i></th>
+                        <th width="15%">Terapis</th>
+                        <th width="2%"><center><i class="fa fa-cog"></i></center></th>
                     </thead>
                 </table>
 
@@ -142,6 +143,7 @@
 
 @includeIf('penjualan_detail.produk')
 @includeIf('penjualan_detail.member')
+@includeIf('penjualan_detail.terapis')
 @endsection
 
 @push('scripts')
@@ -167,6 +169,7 @@
                 {data: 'jumlah'},
                 {data: 'diskon'},
                 {data: 'subtotal'},
+                {data: 'terapis'},
                 {data: 'aksi', searchable: false, sortable: false},
             ],
             dom: 'Brt',
@@ -283,6 +286,38 @@
 
     function hideMember() {
         $('#modal-member').modal('hide');
+    }
+    var tempIdDetail;
+    function tampilTerapis(id_detail) {
+        $('#modal-terapis').modal('show');
+        tempIdDetail = id_detail;
+    }
+
+    function hideTerapis() {
+        $('#modal-terapis').modal('hide');
+    }
+
+    function pilihTerapis( id, kode) {
+        $('#id_terapis').val(id);
+        $('#kode_terapis').val(kode);
+        hideTerapis();
+        tambahTerapis();
+    }
+
+    function tambahTerapis(){
+        $.post(`{{ url('/trx') }}/updateTerapis`, {
+                    '_token': $('meta[name="csrf-token"]').attr('content'),
+                    '_method': 'put',
+                    'id_penjualan_detail':  tempIdDetail,
+                    'id_terapis':  $('#id_terapis').val(),
+                })
+                .done(response => {
+                    table.ajax.reload(() => loadForm($('#diskon').val()));
+                })
+                .fail(errors => {
+                    alert('Tidak dapat menyimpan data');
+                    return;
+                });
     }
 
     function deleteData(url) {
